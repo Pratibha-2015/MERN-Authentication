@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
-import userModel from '../models/userModels';
+import userModel from '../models/userModels.js';
 
 export const register = async (req ,res ) =>{
      const {name, email, password} = req.body;
@@ -18,13 +18,13 @@ export const register = async (req ,res ) =>{
  const  hashedPassword = await bcrypt.hash(password, 10);
  const user = new userModel({name, email,password: hashedPassword})
  await user.save();
-  const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{ expireIn:'7d'});
+  const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{ expiresIn:'7d'});
   res.cookie('token', token, {
     httpOnly : true,
     secure:process.env.NODE_ENV ==='production',
-    sameSite:   process.env. NODE_ENV ==='production' ? 
+    sameSite:   process.env.NODE_ENV ==='production' ? 
     'none' : 'strict',
-    maxAge: 7 * 24 * 160 * 60 * 1000
+    maxAge: 7 * 24 * 60 * 60 * 1000
 });
 return res.json({sucess:true});
       }catch(error){
@@ -48,18 +48,16 @@ export  const login = async (req, res) => {
     return res.json({sucess: false, message:' Invalid password'})
   }
   const token = jwt.sign({id: user._id},process.env.
-    JWT_SECRET,{ expireIn:'7d'});
+    JWT_SECRET,{ expiresIn:'7d'});
   res.cookie('token', token, {
     httpOnly : true,
     secure:process.env.NODE_ENV ==='production',
-    sameSite:   process.env. NODE_ENV ==='production' ? 
+    sameSite:   process.env.NODE_ENV ==='production' ? 
     'none' : 'strict',
-    maxAge: 7 * 24 * 160 * 60 * 1000
+    maxAge: 7 * 24 * 60 * 60 * 1000
 });
 return res.json({sucess:true});
-
-
-    } catch(error){
+ } catch(error){
         return res.json({success: false, message: error.message})
     }
 }
